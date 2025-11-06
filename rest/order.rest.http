@@ -1,0 +1,22 @@
+# ========== CONFIGURATION ==========
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+# ==================================
+# 1️⃣ Test API tạo đơn hàng
+# ==================================
+POST {{baseUrl}}/orders
+Content-Type: {{contentType}}
+
+{
+  "customerId": "user-001",
+  "items": [
+    { "sku": "SKU-123", "qty": 2, "price": 150000 },
+    { "sku": "SKU-456", "qty": 1, "price": 95000 }
+  ]
+}
+
+
+# docker exec -it rabbitmq38 bash -c "rabbitmqctl list_queues -p rabbit-trybuy -s name | xargs -n1 rabbitmqctl -p my_vhost delete_queue"
+
+# docker exec -it rabbitmq38 bash -c "rabbitmqctl list_queues -p rabbit-trybuy -s name | xargs -n1 rabbitmqctl -p rabbit-trybuy delete_queue"
