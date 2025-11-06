@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    ports:
+      - "${GATEWAY_PORT:-3000}:3000"
+    environment:
+      - GATEWAY_PORT=${GATEWAY_PORT:-3000}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3001}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT:-5672}
+      - RABBITMQ_VHOST=${RABBITMQ_VHOST:-/}
+      - ORDERS_SERVICE_HOST=orders
+      - ORDERS_SERVICE_PORT=${ORDERS_SERVICE_PORT:-3001}
+    depends_on:
+      - orders
+    networks:
+      - nestjs-network
+    restart: unless-stopped
+
+  orders:
+    build:
+      context: .
+      dockerfile: Dockerfile.orders
+    environment:
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT:-5672}
+      - RABBITMQ_VHOST=${RABBITMQ_VHOST:-/}
+      - TCP_PORT=${TCP_PORT:-3001}
+    networks:
+      - nestjs-network
+    restart: unless-stopped
+
+networks:
+  nestjs-network:
+    driver: bridge
+

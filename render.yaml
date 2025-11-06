@@ -1,0 +1,58 @@
+services:
+  # Gateway Service (HTTP REST API)
+  - type: web
+    name: nestjs-gateway
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build gateway
+    startCommand: node dist/apps/gateway/main.js
+    healthCheckPath: /health
+    envVars:
+      - key: GATEWAY_PORT
+        value: 3000
+      - key: FRONTEND_URL
+        value: https://adidas-mocha.vercel.app
+      - key: RABBITMQ_USER
+        sync: false
+      - key: RABBITMQ_PASS
+        sync: false
+      - key: RABBITMQ_HOST
+        sync: false
+      - key: RABBITMQ_PORT
+        value: 5672
+      - key: RABBITMQ_VHOST
+        value: /
+      - key: ORDERS_SERVICE_HOST
+        value: nestjs-orders
+      - key: ORDERS_SERVICE_PORT
+        value: 3001
+
+  # Orders Service (TCP Microservice)
+  # Note: Render doesn't support TCP services directly
+  # Option 1: Use Background Worker (won't work for TCP)
+  # Option 2: Deploy as separate service with HTTP wrapper
+  # Option 3: Use Docker Compose (recommended)
+  - type: worker
+    name: nestjs-orders
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build orders
+    startCommand: node dist/apps/orders/main.js
+    envVars:
+      - key: RABBITMQ_USER
+        sync: false
+      - key: RABBITMQ_PASS
+        sync: false
+      - key: RABBITMQ_HOST
+        sync: false
+      - key: RABBITMQ_PORT
+        value: 5672
+      - key: RABBITMQ_VHOST
+        value: /
+      - key: TCP_PORT
+        value: 3001
+      - key: TCP_HOST
+        value: 0.0.0.0
+
