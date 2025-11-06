@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
+import { PrismaService } from './prisma.service';
 import { ConfigModule } from '@nestjs/config';
 import { RmqModule } from '@app/common';
 import { EXCHANGE } from '@app/common/constants/exchange';
@@ -16,6 +17,7 @@ import { EXCHANGE } from '@app/common/constants/exchange';
     RmqModule.registerDirectPublisher()
   ],
   controllers: [OrdersController],
-  providers: [OrdersService],
+  providers: [OrdersService, PrismaService],
+  exports: [PrismaService],
 })
 export class OrdersModule {}

@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("PAYMENTS_DATABASE_URL")
+  directUrl = env("PAYMENTS_DATABASE_DIRECT_URL")
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  orderId       String
+  customerId    String
+  amount        Decimal       @db.Decimal(10, 2)
+  currency      String        @default("USD")
+  status        PaymentStatus @default(PENDING)
+  method        PaymentMethod
+  transactionId String?       // External payment gateway transaction ID
+  metadata      Json?         // Additional payment data
+  paidAt        DateTime?
+  refundedAt    DateTime?
+  refundAmount  Decimal?      @db.Decimal(10, 2)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([orderId])
+  @@index([customerId])
+  @@index([status])
+  @@index([transactionId])
+  @@map("payments")
+}
+
+model PaymentAttempt {
+  id            String   @id @default(uuid())
+  paymentId     String
+  status        PaymentStatus
+  errorMessage  String?
+  gatewayResponse Json?  // Raw response from payment gateway
+  createdAt     DateTime @default(now())
+  payment       Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId])
+  @@map("payment_attempts")
+}
+
+model Refund {
+  id            String   @id @default(uuid())
+  paymentId     String
+  amount        Decimal   @db.Decimal(10, 2)
+  reason        String?
+  status        RefundStatus @default(PENDING)
+  transactionId String?  // External refund transaction ID
+  processedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  payment       Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId])
+  @@index([status])
+  @@map("refunds")
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PAYPAL
+  STRIPE
+  KLARNA
+  APPLE_PAY
+  GOOGLE_PAY
+  BANK_TRANSFER
+  CASH_ON_DELIVERY
+}
+
+enum RefundStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+

@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("INVENTORY_DATABASE_URL")
+  directUrl = env("INVENTORY_DATABASE_DIRECT_URL")
+}
+
+model ProductStock {
+  id          String   @id @default(uuid())
+  sku         String   @unique
+  productId   String?
+  productName String?
+  quantity    Int      @default(0)
+  reserved    Int      @default(0)
+  available   Int      @default(0) // quantity - reserved
+  location    String?  // warehouse location
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sku])
+  @@index([productId])
+  @@map("product_stocks")
+}
+
+model StockReservation {
+  id          String   @id @default(uuid())
+  sku         String
+  orderId     String
+  quantity    Int
+  status      ReservationStatus @default(PENDING)
+  expiresAt   DateTime?
+  stock       ProductStock? @relation(fields: [sku], references: [sku], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sku])
+  @@index([orderId])
+  @@index([status])
+  @@map("stock_reservations")
+}
+
+model StockMovement {
+  id          String   @id @default(uuid())
+  sku         String
+  type        MovementType
+  quantity    Int
+  reason      String?
+  orderId     String?
+  reference   String?  // Reference to external system
+  stock       ProductStock? @relation(fields: [sku], references: [sku], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([sku])
+  @@index([orderId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("stock_movements")
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
+enum MovementType {
+  IN        // Stock in
+  OUT       // Stock out
+  ADJUSTMENT // Manual adjustment
+  RESERVED  // Reserved for order
+  RELEASED  // Released from reservation
+}
+

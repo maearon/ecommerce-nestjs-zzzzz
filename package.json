@@ -24,7 +24,20 @@
     "start:payments": "nest start payments --watch",
     "start:rewards": "nest start rewards --watch",
     "start:nodeA": "concurrently -n GATEWAY,ORDERS -c blue,green \"npm run start:gateway\" \"npm run start:orders\"",
-    "start:nodeB": "concurrently -n INVENTORY,PAYMENTS,REWARDS -c yellow,magenta,cyan \"npm run start:inventory\" \"npm run start:payments\" \"npm run start:rewards\""
+    "start:nodeB": "concurrently -n INVENTORY,PAYMENTS,REWARDS -c yellow,magenta,cyan \"npm run start:inventory\" \"npm run start:payments\" \"npm run start:rewards\"",
+    "prisma:generate:orders": "prisma generate --schema=apps/orders/prisma/schema.prisma",
+    "prisma:generate:inventory": "prisma generate --schema=apps/inventory/prisma/schema.prisma",
+    "prisma:generate:payments": "prisma generate --schema=apps/payments/prisma/schema.prisma",
+    "prisma:generate:rewards": "prisma generate --schema=apps/rewards/prisma/schema.prisma",
+    "prisma:generate:all": "npm run prisma:generate:orders && npm run prisma:generate:inventory && npm run prisma:generate:payments && npm run prisma:generate:rewards",
+    "prisma:migrate:orders": "prisma migrate dev --schema=apps/orders/prisma/schema.prisma",
+    "prisma:migrate:inventory": "prisma migrate dev --schema=apps/inventory/prisma/schema.prisma",
+    "prisma:migrate:payments": "prisma migrate dev --schema=apps/payments/prisma/schema.prisma",
+    "prisma:migrate:rewards": "prisma migrate dev --schema=apps/rewards/prisma/schema.prisma",
+    "prisma:push:orders": "prisma db push --schema=apps/orders/prisma/schema.prisma",
+    "prisma:push:inventory": "prisma db push --schema=apps/inventory/prisma/schema.prisma",
+    "prisma:push:payments": "prisma db push --schema=apps/payments/prisma/schema.prisma",
+    "prisma:push:rewards": "prisma db push --schema=apps/rewards/prisma/schema.prisma"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

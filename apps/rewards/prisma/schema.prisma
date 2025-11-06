@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("REWARDS_DATABASE_URL")
+  directUrl = env("REWARDS_DATABASE_DIRECT_URL")
+}
+
+model CustomerReward {
+  id          String   @id @default(uuid())
+  customerId  String
+  points      Int      @default(0)
+  totalEarned Int      @default(0)
+  totalSpent  Int      @default(0)
+  level       RewardLevel @default(BRONZE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  transactions RewardTransaction[]
+
+  @@unique([customerId])
+  @@index([customerId])
+  @@index([level])
+  @@map("customer_rewards")
+}
+
+model RewardTransaction {
+  id          String   @id @default(uuid())
+  customerRewardId String
+  orderId     String?
+  type        TransactionType
+  points      Int      // Positive for earned, negative for spent
+  description String?
+  expiresAt   DateTime?
+  customerReward CustomerReward @relation(fields: [customerRewardId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([customerRewardId])
+  @@index([orderId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("reward_transactions")
+}
+
+model RewardRule {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  type        RuleType
+  points      Int
+  minAmount   Decimal? @db.Decimal(10, 2)
+  enabled     Boolean  @default(true)
+  validFrom   DateTime?
+  validTo     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type])
+  @@index([enabled])
+  @@map("reward_rules")
+}
+
+enum RewardLevel {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
+enum TransactionType {
+  EARNED       // Points earned from purchase
+  SPENT        // Points spent on discount
+  EXPIRED      // Points expired
+  ADJUSTMENT   // Manual adjustment
+  BONUS        // Bonus points
+}
+
+enum RuleType {
+  PURCHASE         // Points per purchase
+  AMOUNT_THRESHOLD // Points when order amount exceeds threshold
+  CATEGORY         // Points for specific product category
+  FIRST_ORDER      // Bonus for first order
+  REFERRAL         // Points for referral
+  BIRTHDAY         // Birthday bonus
+}
+
