@@ -37,6 +37,17 @@ export class OrdersService {
         customerId: payload.customerId,
         total: total,
         status: OrderStatus.CREATED,
+        // Address fields
+        firstName: payload.address?.firstName,
+        lastName: payload.address?.lastName,
+        street: payload.address?.street,
+        apartment: payload.address?.apartment,
+        city: payload.address?.city,
+        state: payload.address?.state,
+        zipCode: payload.address?.zipCode,
+        country: payload.address?.country || "US",
+        phone: payload.address?.phone,
+        formattedAddress: payload.address?.formattedAddress,
         items: {
           create: (payload.items || []).map((item: any) => ({
             sku: item.sku,

@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { RmqModule } from '@app/common';
 import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
+import { PrismaService } from './prisma.service';
 
 @Module({
   imports: [
@@ -14,6 +15,6 @@ import { PaymentsService } from './payments.service';
     RmqModule, // Import module Rmq chung để có thể inject RmqService
   ],
   controllers: [PaymentsController],
-  providers: [PaymentsService],
+  providers: [PaymentsService, PrismaService],
 })
 export class PaymentsModule {}
