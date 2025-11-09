@@ -20,6 +20,10 @@ model ProductStock {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // 👇 Quan hệ hai chiều (đặt tên đồng nhất ở cả hai bên)
+  reservations  StockReservation[]  @relation("StockReservationsOnProduct")
+  movements     StockMovement[]     @relation("StockMovementsOnProduct")
+
   @@index([sku])
   @@index([productId])
   @@map("product_stocks")
@@ -32,7 +36,8 @@ model StockReservation {
   quantity    Int
   status      ReservationStatus @default(PENDING)
   expiresAt   DateTime?
-  stock       ProductStock? @relation(fields: [sku], references: [sku], onDelete: Cascade)
+  // 👇 Quan hệ chính (đặt tên trùng với phía ProductStock)
+  stock       ProductStock @relation("StockReservationsOnProduct", fields: [sku], references: [sku], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -50,7 +55,8 @@ model StockMovement {
   reason      String?
   orderId     String?
   reference   String?  // Reference to external system
-  stock       ProductStock? @relation(fields: [sku], references: [sku], onDelete: Cascade)
+  // 👇 Quan hệ chính (đặt tên trùng với phía ProductStock)
+  stock       ProductStock @relation("StockMovementsOnProduct", fields: [sku], references: [sku], onDelete: Cascade)
   createdAt   DateTime @default(now())
 
   @@index([sku])
@@ -68,10 +74,9 @@ enum ReservationStatus {
 }
 
 enum MovementType {
-  IN        // Stock in
-  OUT       // Stock out
+  IN         // Stock in
+  OUT        // Stock out
   ADJUSTMENT // Manual adjustment
-  RESERVED  // Reserved for order
-  RELEASED  // Released from reservation
+  RESERVED   // Reserved for order
+  RELEASED   // Released from reservation
 }
-

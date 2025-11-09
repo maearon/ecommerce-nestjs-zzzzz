@@ -9,20 +9,24 @@ datasource db {
 }
 
 model Payment {
-  id            String        @id @default(uuid())
-  orderId       String
-  customerId    String
-  amount        Decimal       @db.Decimal(10, 2)
-  currency      String        @default("USD")
-  status        PaymentStatus @default(PENDING)
-  method        PaymentMethod
-  transactionId String?       // External payment gateway transaction ID
-  metadata      Json?         // Additional payment data
-  paidAt        DateTime?
-  refundedAt    DateTime?
-  refundAmount  Decimal?      @db.Decimal(10, 2)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             String           @id @default(uuid())
+  orderId        String
+  customerId     String
+  amount         Decimal          @db.Decimal(10, 2)
+  currency       String           @default("USD")
+  status         PaymentStatus    @default(PENDING)
+  method         PaymentMethod
+  transactionId  String?          // External payment gateway transaction ID
+  metadata       Json?            // Additional payment data
+  paidAt         DateTime?
+  refundedAt     DateTime?
+  refundAmount   Decimal?         @db.Decimal(10, 2)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  // 👇 Quan hệ hai chiều
+  attempts       PaymentAttempt[] @relation("AttemptsOnPayment")
+  refunds        Refund[]         @relation("RefundsOnPayment")
 
   @@index([orderId])
   @@index([customerId])
@@ -32,29 +36,33 @@ model Payment {
 }
 
 model PaymentAttempt {
-  id            String   @id @default(uuid())
-  paymentId     String
-  status        PaymentStatus
-  errorMessage  String?
-  gatewayResponse Json?  // Raw response from payment gateway
-  createdAt     DateTime @default(now())
-  payment       Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  id              String         @id @default(uuid())
+  paymentId       String
+  status          PaymentStatus
+  errorMessage    String?
+  gatewayResponse Json?          // Raw response from payment gateway
+  createdAt       DateTime       @default(now())
+
+  // 👇 Quan hệ chính - tên trùng với phía Payment
+  payment         Payment        @relation("AttemptsOnPayment", fields: [paymentId], references: [id], onDelete: Cascade)
 
   @@index([paymentId])
   @@map("payment_attempts")
 }
 
 model Refund {
-  id            String   @id @default(uuid())
-  paymentId     String
-  amount        Decimal   @db.Decimal(10, 2)
-  reason        String?
-  status        RefundStatus @default(PENDING)
-  transactionId String?  // External refund transaction ID
-  processedAt   DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  payment       Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  id             String         @id @default(uuid())
+  paymentId      String
+  amount         Decimal        @db.Decimal(10, 2)
+  reason         String?
+  status         RefundStatus   @default(PENDING)
+  transactionId  String?        // External refund transaction ID
+  processedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  // 👇 Quan hệ chính - tên trùng với phía Payment
+  payment        Payment        @relation("RefundsOnPayment", fields: [paymentId], references: [id], onDelete: Cascade)
 
   @@index([paymentId])
   @@index([status])
@@ -92,4 +100,3 @@ enum RefundStatus {
   FAILED
   CANCELLED
 }
-
