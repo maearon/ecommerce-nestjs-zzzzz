@@ -9,7 +9,7 @@ COPY libs ./libs
 
 RUN npm ci
 RUN npx prisma generate --schema=apps/payments/prisma/schema.prisma
-RUN npm run build payment
+RUN npm run build payments
 
 FROM node:20-alpine
 WORKDIR /app
