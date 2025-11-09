@@ -20,7 +20,8 @@ async function bootstrap() {
     }
   );
 
-  await app.listen();
+  const port = process.env.ORDERS_PORT || 3000;
+  await app.listen(port);
   console.log(`Orders microservice is listening on ${host}:${port}`);
 }
 bootstrap();
