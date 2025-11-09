@@ -20,8 +20,10 @@ async function bootstrap() {
     }
   );
 
-  const port = process.env.ORDERS_PORT || 3000;
-  await app.listen(port);
+  const httpPort = process.env.ORDERS_PORT || 3000;
+  await app.listen(httpPort);
+  const dummy = await NestFactory.create(OrdersModule);
+  await dummy.listen(httpPort, '0.0.0.0');
   console.log(`Orders microservice is listening on ${host}:${port}`);
 }
 bootstrap();
