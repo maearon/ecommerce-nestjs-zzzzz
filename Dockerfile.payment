@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig*.json ./
 COPY nest-cli.json ./
-COPY apps/payment ./apps/payment
+COPY apps/payments ./apps/payments
 COPY libs ./libs
 
 RUN npm ci
@@ -19,4 +19,4 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
-CMD ["node", "dist/apps/payment/main.js"]
+CMD ["node", "dist/apps/payments/main.js"]
