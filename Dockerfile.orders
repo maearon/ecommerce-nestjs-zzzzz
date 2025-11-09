@@ -13,6 +13,7 @@ COPY libs ./libs
 
 # Install dependencies and build
 RUN npm ci
+RUN npx prisma generate --schema=apps/orders/prisma/schema.prisma
 RUN npm run build orders
 
 # Production stage
