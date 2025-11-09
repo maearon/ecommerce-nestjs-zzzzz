@@ -3,7 +3,7 @@ import { EXCHANGE } from '@app/common/constants/exchange';
 import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { Channel } from 'amqplib';
 import { PrismaService } from './prisma.service';
-import { OrderStatus } from '@prisma/client';
+import { OrderStatus } from '@prisma/client-orders';
 
 @Injectable()
 export class OrdersService {
