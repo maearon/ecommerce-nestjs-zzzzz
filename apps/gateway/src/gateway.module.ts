@@ -17,7 +17,8 @@ import { TCP } from '@app/common/constants/TCP';
         useFactory: (configService: ConfigService) => ({
           transport: Transport.TCP,
           options: {
-            host: configService.get<string>('ORDERS_SERVICE_HOST') || 'localhost',
+            host:
+              configService.get<string>('ORDERS_SERVICE_HOST') || 'localhost',
             port: configService.get<number>('ORDERS_SERVICE_PORT') || 3001,
           },
         }),

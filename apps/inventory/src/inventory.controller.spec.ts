@@ -16,6 +16,7 @@ describe('InventoryController', () => {
 
   describe('root', () => {
     it('should return "Hello World!"', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       expect(inventoryController.getHello()).toBe('Hello World!');
     });
   });

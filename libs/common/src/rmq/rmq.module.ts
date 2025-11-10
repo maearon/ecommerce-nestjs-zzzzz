@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -8,11 +11,6 @@ import * as amqp from 'amqplib';
 interface RmqModuleOptions {
   name: string;
   // exchange: string;
-}
-
-interface RmqPublisherOptions {
-  name: string;
-  exchange: string;
 }
 
 @Module({
@@ -64,7 +62,9 @@ export class RmqModule {
       providers: [
         {
           provide: EXCHANGE.RMQ_PUBLISHER_CHANNEL,
-          useFactory: async (configService: ConfigService): Promise<amqp.Channel> => {
+          useFactory: async (
+            configService: ConfigService,
+          ): Promise<amqp.Channel> => {
             try {
               const user = configService.get<string>('RABBITMQ_USER');
               const pass = configService.get<string>('RABBITMQ_PASS');
@@ -78,7 +78,7 @@ export class RmqModule {
 
               const encodedVhost = encodeURIComponent(vhost);
               const rabbitmqUri = `amqp://${user}:${pass}@${host}:${port}/${encodedVhost}`;
-              
+
               const connection = await amqp.connect(rabbitmqUri);
               const channel = await connection.createChannel();
               console.log('Direct Publisher Channel created successfully.');
@@ -94,5 +94,4 @@ export class RmqModule {
       exports: [EXCHANGE.RMQ_PUBLISHER_CHANNEL],
     };
   }
-
 }

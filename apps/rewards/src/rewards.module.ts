@@ -8,9 +8,9 @@ import { RewardsService } from './rewards.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: './local/nodeB/.env', 
+      envFilePath: './local/nodeB/.env',
     }),
-    RmqModule
+    RmqModule,
   ],
   controllers: [RewardsController],
   providers: [RewardsService, RmqService],

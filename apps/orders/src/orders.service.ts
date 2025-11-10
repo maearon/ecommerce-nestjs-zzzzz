@@ -1,6 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { EVENT } from '@app/common/constants/event';
 import { EXCHANGE } from '@app/common/constants/exchange';
-import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { Channel } from 'amqplib';
 import { PrismaService } from './prisma.service';
 import { OrderStatus } from '@prisma/client';
@@ -10,9 +18,10 @@ export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
   constructor(
-    @Inject(EXCHANGE.RMQ_PUBLISHER_CHANNEL) private readonly fanoutChannel: Channel,
+    @Inject(EXCHANGE.RMQ_PUBLISHER_CHANNEL)
+    private readonly fanoutChannel: Channel,
     private readonly prisma: PrismaService,
-  ) { }
+  ) {}
 
   async onModuleInit() {}
 
@@ -22,13 +31,16 @@ export class OrdersService {
     // 1. Check stock in inventory (TODO: call inventory service)
     const isStockAvailable = true; // call api -> inventory
     if (!isStockAvailable) {
-      throw new BadRequestException("Not enough stock for the requested items...");
+      throw new BadRequestException(
+        'Not enough stock for the requested items...',
+      );
     }
 
     // 2. Calculate total
     const total = (payload.items || []).reduce(
-      (sum: number, item: any) => sum + (Number(item.price) || 0) * (item.qty || 0),
-      0
+      (sum: number, item: any) =>
+        sum + (Number(item.price) || 0) * (item.qty || 0),
+      0,
     );
 
     // 3. Create order in database
@@ -45,7 +57,7 @@ export class OrdersService {
         city: payload.address?.city,
         state: payload.address?.state,
         zipCode: payload.address?.zipCode,
-        country: payload.address?.country || "US",
+        country: payload.address?.country || 'US',
         phone: payload.address?.phone,
         formattedAddress: payload.address?.formattedAddress,
         items: {
@@ -82,7 +94,7 @@ export class OrdersService {
     this.fanoutChannel.publish(
       exchangeName,
       routingKey, // routing key is ignored in fanout exchange
-      Buffer.from(JSON.stringify(eventPayload))
+      Buffer.from(JSON.stringify(eventPayload)),
     );
 
     this.logger.log(`[ORDERS] Order event published with ID: ${order.id}`);

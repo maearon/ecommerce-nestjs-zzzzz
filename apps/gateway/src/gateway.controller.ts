@@ -3,6 +3,9 @@ import { GatewayService } from './gateway.service';
 
 @Controller()
 export class GatewayController {
+  getHello(): any {
+    throw new Error('Method not implemented.');
+  }
   private readonly logger = new Logger(GatewayController.name);
   constructor(private readonly gatewayService: GatewayService) {}
 
@@ -17,7 +20,10 @@ export class GatewayController {
 
   @Post('orders')
   async createOrder(@Body() payload: any) {
-    this.logger.log(`[PLACE ORDER1(1)] | GatewayController | Received HTTP order creation request: ${JSON.stringify(payload)}`);
+    this.logger.log(
+      `[PLACE ORDER1(1)] | GatewayController | Received HTTP order creation request: ${JSON.stringify(payload)}`,
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.gatewayService.createOrder(payload);
   }
 }

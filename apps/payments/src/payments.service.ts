@@ -1,36 +1,39 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { PaymentMethod, PaymentStatus } from '@prisma/client';
 
 @Injectable()
 export class PaymentsService {
-    private readonly logger = new Logger(PaymentsService.name);
+  private readonly logger = new Logger(PaymentsService.name);
 
-    constructor(
-        private readonly prisma: PrismaService,
-    ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-    async processPayment(order: any) {
-        this.logger.log(`Processing payment for order ${order.id}...`);
-        
-        // Determine payment method from order metadata or default
-        const paymentMethod = order.paymentMethod || PaymentMethod.CASH_ON_DELIVERY;
-        const amount = parseFloat(order.total || '0');
+  async processPayment(order: any) {
+    this.logger.log(`Processing payment for order ${order.id}...`);
 
-        // Create payment record
-        const payment = await this.prisma.payment.create({
-            data: {
-                orderId: order.id,
-                customerId: order.customerId,
-                amount: amount,
-                currency: 'USD',
-                status: PaymentStatus.PENDING,
-                method: paymentMethod as PaymentMethod,
-            },
-        });
+    // Determine payment method from order metadata or default
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const paymentMethod = order.paymentMethod || PaymentMethod.CASH_ON_DELIVERY;
+    const amount = parseFloat(order.total || '0');
 
-        this.logger.log(`Payment record created: ${payment.id} for order ${order.id}`);
+    // Create payment record
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const payment = await this.prisma.payment.create({
+      data: {
+        orderId: order.id,
+        customerId: order.customerId,
+        amount: amount,
+        currency: 'USD',
+        status: PaymentStatus.PENDING,
+        method: paymentMethod as PaymentMethod,
+      },
+    });
 
+    this.logger.log(
+      `Payment record created: ${payment.id} for order ${order.id}`,
         // Handle different payment methods
         switch (paymentMethod) {
             case PaymentMethod.MOMO:

@@ -9,18 +9,27 @@ export class GatewayService {
 
   constructor(
     @Inject(TCP.ORDERS_SERVICE) private readonly ordersClient: ClientProxy,
-  ) { }
+  ) {}
 
   async createOrder(payload: any) {
-    this.logger.log(`[GATEWAY] Sending request to Orders Service with payload: ${JSON.stringify(payload)}`);
+    this.logger.log(
+      `[GATEWAY] Sending request to Orders Service with payload: ${JSON.stringify(payload)}`,
+    );
 
     // Dùng .send() để thực hiện RPC - gửi request và đợi response
-    const resultObservable = this.ordersClient.send({ cmd: 'create_order' }, payload);
+    const resultObservable = this.ordersClient.send(
+      { cmd: 'create_order' },
+      payload,
+    );
 
     // Chuyển Observable thành Promise để có thể await
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const result = await firstValueFrom(resultObservable);
 
-    this.logger.log(`[GATEWAY] Received response from Orders Service: ${JSON.stringify(result)}`);
+    this.logger.log(
+      `[GATEWAY] Received response from Orders Service: ${JSON.stringify(result)}`,
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return result;
   }
 }

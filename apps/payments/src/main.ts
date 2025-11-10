@@ -10,11 +10,13 @@ async function bootstrap() {
   // // Kết nối microservice, lắng nghe trên queue 'PAYMENTS_SERVICE_QUEUE'
   // app.connectMicroservice(rmqService.getOptions('PAYMENTS_SERVICE_QUEUE'));
   const rmqService = app.get<RmqService>(RmqService);
-    app.connectMicroservice(rmqService.getOptionsTopic('PAYMENTS_SERVICE', false, {
+  app.connectMicroservice(
+    rmqService.getOptionsTopic('PAYMENTS_SERVICE', false, {
       name: EXCHANGE.ORDERS_EXCHANGE,
       type: 'fanout',
-    }));
+    }),
+  );
   await app.startAllMicroservices();
   console.log('💳 Payments microservice is running and listening for events.');
 }
-bootstrap();
+void bootstrap();

@@ -9,7 +9,7 @@ import { InventoryService } from './inventory.service';
     ConfigModule.forRoot({
       isGlobal: true,
       // Quan trọng: Chỉ định đúng đường dẫn tới file .env của nodeB
-      envFilePath: './local/nodeB/.env', 
+      envFilePath: './local/nodeB/.env',
     }),
     RmqModule, // Import module Rmq chung để có thể inject RmqService
   ],

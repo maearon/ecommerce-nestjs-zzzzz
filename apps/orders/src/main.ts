@@ -5,10 +5,10 @@ import * as dotenv from 'dotenv';
 
 async function bootstrap() {
   dotenv.config();
-  
+
   const port = parseInt(process.env.TCP_PORT || '3001', 10);
   const host = process.env.TCP_HOST || '0.0.0.0'; // Use 0.0.0.0 for Docker
-  
+
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     OrdersModule,
     {
@@ -17,7 +17,7 @@ async function bootstrap() {
         host,
         port,
       },
-    }
+    },
   );
 
   const httpPort = process.env.ORDERS_PORT || 3000;
@@ -26,4 +26,4 @@ async function bootstrap() {
   await dummy.listen(httpPort, '0.0.0.0');
   console.log(`Orders microservice is listening on ${host}:${port}`);
 }
-bootstrap();
+void bootstrap();
