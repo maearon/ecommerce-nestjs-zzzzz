@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -34,126 +35,130 @@ export class PaymentsService {
 
     this.logger.log(
       `Payment record created: ${payment.id} for order ${order.id}`,
-        // Handle different payment methods
-        switch (paymentMethod) {
-            case PaymentMethod.MOMO:
-                return await this.processMoMoPayment(payment, order);
-            case PaymentMethod.VNPAY:
-                return await this.processVNPayPayment(payment, order);
-            case PaymentMethod.STRIPE:
-                return await this.processStripePayment(payment, order);
-            case PaymentMethod.PAYPAL:
-                return await this.processPayPalPayment(payment, order);
-            case PaymentMethod.CASH_ON_DELIVERY:
-                return await this.processCODPayment(payment, order);
-            default:
-                this.logger.warn(`Unknown payment method: ${paymentMethod}, defaulting to COD`);
-                return await this.processCODPayment(payment, order);
-        }
+    );
+
+    // Handle different payment methods
+    switch (paymentMethod) {
+      case PaymentMethod.MOMO:
+        return await this.processMoMoPayment(payment, order);
+      case PaymentMethod.VNPAY:
+        return await this.processVNPayPayment(payment, order);
+      case PaymentMethod.STRIPE:
+        return await this.processStripePayment(payment, order);
+      case PaymentMethod.PAYPAL:
+        return await this.processPayPalPayment(payment, order);
+      case PaymentMethod.CASH_ON_DELIVERY:
+        return await this.processCODPayment(payment, order);
+      default:
+        this.logger.warn(
+          `Unknown payment method: ${paymentMethod}, defaulting to COD`,
+        );
+        return await this.processCODPayment(payment, order);
     }
+  }
 
-    private async processMoMoPayment(payment: any, order: any) {
-        this.logger.log(`Processing MoMo payment for payment ${payment.id}`);
-        
-        // TODO: Integrate with MoMo API
-        // For now, simulate payment processing
-        await new Promise(resolve => setTimeout(resolve, 1000));
+  private async processMoMoPayment(payment: any, order: any) {
+    this.logger.log(`Processing MoMo payment for payment ${payment.id}`);
 
-        // Update payment status
-        await this.prisma.payment.update({
-            where: { id: payment.id },
-            data: {
-                status: PaymentStatus.PROCESSING,
-                metadata: {
-                    provider: 'momo',
-                    orderId: order.id,
-                },
-            },
-        });
+    // TODO: Integrate with MoMo API
+    // For now, simulate payment processing
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        this.logger.log(`MoMo payment ${payment.id} processed successfully.`);
-        return { paymentId: payment.id, status: 'processing', provider: 'momo' };
-    }
+    // Update payment status
+    await this.prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        status: PaymentStatus.PROCESSING,
+        metadata: {
+          provider: 'momo',
+          orderId: order.id,
+        },
+      },
+    });
 
-    private async processVNPayPayment(payment: any, order: any) {
-        this.logger.log(`Processing VNPay payment for payment ${payment.id}`);
-        
-        // TODO: Integrate with VNPay API
-        // For now, simulate payment processing
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    this.logger.log(`MoMo payment ${payment.id} processed successfully.`);
+    return { paymentId: payment.id, status: 'processing', provider: 'momo' };
+  }
 
-        // Update payment status
-        await this.prisma.payment.update({
-            where: { id: payment.id },
-            data: {
-                status: PaymentStatus.PROCESSING,
-                metadata: {
-                    provider: 'vnpay',
-                    orderId: order.id,
-                },
-            },
-        });
+  private async processVNPayPayment(payment: any, order: any) {
+    this.logger.log(`Processing VNPay payment for payment ${payment.id}`);
 
-        this.logger.log(`VNPay payment ${payment.id} processed successfully.`);
-        return { paymentId: payment.id, status: 'processing', provider: 'vnpay' };
-    }
+    // TODO: Integrate with VNPay API
+    // For now, simulate payment processing
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    private async processStripePayment(payment: any, order: any) {
-        this.logger.log(`Processing Stripe payment for payment ${payment.id}`);
-        
-        // TODO: Integrate with Stripe API
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    // Update payment status
+    await this.prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        status: PaymentStatus.PROCESSING,
+        metadata: {
+          provider: 'vnpay',
+          orderId: order.id,
+        },
+      },
+    });
 
-        await this.prisma.payment.update({
-            where: { id: payment.id },
-            data: {
-                status: PaymentStatus.PROCESSING,
-                metadata: {
-                    provider: 'stripe',
-                    orderId: order.id,
-                },
-            },
-        });
+    this.logger.log(`VNPay payment ${payment.id} processed successfully.`);
+    return { paymentId: payment.id, status: 'processing', provider: 'vnpay' };
+  }
 
-        return { paymentId: payment.id, status: 'processing', provider: 'stripe' };
-    }
+  private async processStripePayment(payment: any, order: any) {
+    this.logger.log(`Processing Stripe payment for payment ${payment.id}`);
 
-    private async processPayPalPayment(payment: any, order: any) {
-        this.logger.log(`Processing PayPal payment for payment ${payment.id}`);
-        
-        // TODO: Integrate with PayPal API
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    // TODO: Integrate with Stripe API
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        await this.prisma.payment.update({
-            where: { id: payment.id },
-            data: {
-                status: PaymentStatus.PROCESSING,
-                metadata: {
-                    provider: 'paypal',
-                    orderId: order.id,
-                },
-            },
-        });
+    await this.prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        status: PaymentStatus.PROCESSING,
+        metadata: {
+          provider: 'stripe',
+          orderId: order.id,
+        },
+      },
+    });
 
-        return { paymentId: payment.id, status: 'processing', provider: 'paypal' };
-    }
+    return { paymentId: payment.id, status: 'processing', provider: 'stripe' };
+  }
 
-    private async processCODPayment(payment: any, order: any) {
-        this.logger.log(`Processing COD payment for payment ${payment.id}`);
-        
-        // COD doesn't need external processing, just mark as pending
-        await this.prisma.payment.update({
-            where: { id: payment.id },
-            data: {
-                status: PaymentStatus.PENDING,
-                metadata: {
-                    provider: 'cod',
-                    orderId: order.id,
-                },
-            },
-        });
+  private async processPayPalPayment(payment: any, order: any) {
+    this.logger.log(`Processing PayPal payment for payment ${payment.id}`);
 
-        this.logger.log(`COD payment ${payment.id} processed successfully.`);
-        return { paymentId: payment.id, status: 'pending', provider: 'cod' };
-    }
+    // TODO: Integrate with PayPal API
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await this.prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        status: PaymentStatus.PROCESSING,
+        metadata: {
+          provider: 'paypal',
+          orderId: order.id,
+        },
+      },
+    });
+
+    return { paymentId: payment.id, status: 'processing', provider: 'paypal' };
+  }
+
+  private async processCODPayment(payment: any, order: any) {
+    this.logger.log(`Processing COD payment for payment ${payment.id}`);
+
+    // COD doesn't need external processing, just mark as pending
+    await this.prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        status: PaymentStatus.PENDING,
+        metadata: {
+          provider: 'cod',
+          orderId: order.id,
+        },
+      },
+    });
+
+    this.logger.log(`COD payment ${payment.id} processed successfully.`);
+    return { paymentId: payment.id, status: 'pending', provider: 'cod' };
+  }
 }
